@@ -176,11 +176,13 @@
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
                     <div class="card">
                         <div class="card-header p-3 pt-2">
-                            <div class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+                            <div
+                                class="icon icon-lg icon-shape bg-gradient-secondary shadow-dark text-center border-radius-xl mt-n4 position-absolute">
                                 <i class="material-icons opacity-10">description</i>
                             </div>
                             <div class="text-end pt-1">
-                                <p class="text-sm text-secondary font-weight-bold mb-0 text-capitalize">Leave applications today</p>
+                                <p class="text-sm opacity-8 text-secondary font-weight-bold mb-0 text-capitalize">Leave
+                                    applications today</p>
                                 <h4 id="leave-count" class="mb-0">...</h4>
                             </div>
                         </div>
@@ -242,7 +244,7 @@
                             </div>
 
                             <div class="text-end pt-1">
-                                <p class="text-sm text-primary mb-0 text-capitalize font-weight-bold">
+                                <p class="text-sm opacity-7 text-primary mb-0 text-capitalize font-weight-bold">
                                     employees on leave</p>
                             </div>
                         </div>
@@ -424,12 +426,12 @@
                         <!-- CARD HEADER -->
                         <div class="card-header p-3 pt-2">
                             <div
-                                class="icon icon-lg icon-shape bg-gradient-danger shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                                class="icon icon-lg icon-shape bg-gradient-warning shadow-primary text-center border-radius-xl mt-n4 position-absolute">
                                 <i class="material-icons opacity-10">people</i>
                             </div>
 
                             <div class="text-end pt-1">
-                                <p class="text-sm text-danger mb-0 text-capitalize font-weight-bold">Leave distribution
+                                <p class="text-sm text-warning opacity-6 mb-0 text-capitalize font-weight-bold">Leave distribution
                                 </p>
                             </div>
                         </div>
@@ -534,21 +536,22 @@
                         <div class="card-header p-3 pt-2">
                             <div
                                 class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
-                                <i class="material-icons opacity-10">weekend</i>
+                                <i class="material-icons opacity-10">percent</i>
                             </div>
                             <div class="text-end pt-1">
-                                <p class="text-sm mb-0 text-capitalize"><span>Absenteeism rate in <span
+                                <p class="text-sm text-info opacity-6 font-weight-bold mb-0 text-capitalize"><span>Absenteeism rate in <span
                                             id="absenteeism-rate-month"></p>
                                 <h4 id="absenteeism-rate" class="mb-0">...</h4>
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
                         <div class="card-footer p-3">
-                            <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+5% </span>than
-                                tomorrow</p>
+                            <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+5% </span>than last month</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- SCRIPT of ABSENTEEISM RATE -->
                 <script type="text/javascript">
                     $(document).ready(
                         function () {
@@ -557,6 +560,49 @@
                                 // Calculate the IST date (UTC+5:30)
                                 //5.5hr * 60mins * 60secs * 1000 ms
                                 let istOffset = 5.5 * 60 * 60 * 1000; // IST offset in milliseconds
+                                let istDate = new Date(date.getTime() + istOffset);
+                                return istDate;
+                            }
+
+                            let today = new Date(); //today's date
+                            today = getISTDate(today);
+                            console.log(today.toISOString());
+                            console.log("LOLLLLLLL", today);
+
+                            let formattedDate = today.toISOString().split('T')[0];
+                            let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                            let month = months[today.getMonth()]
+                            console.log("MONTH for absenteeism rate: ", month);
+
+                            $.get('http://127.0.0.1:8000/abc/absenteeism_rate/', { date: formattedDate })
+                                .done(
+                                    function (response) {
+                                        if (response.status === 1) {
+                                            let employeeCount = response.msg; //captures the msg field in the Response json
+                                            $('#absenteeism-rate').text(employeeCount + ' %');
+                                            $('#absenteeism-rate-month').text(month);
+                                        }
+                                        else {
+                                            console.error("Error: ", response.error);
+                                        }
+                                    }
+                                )
+                                .fail(
+                                    function (error) {
+                                        console.error("Error fetching data: ", error);
+                                    }
+                                );
+                        }
+                    );
+                </script>
+
+                <!-- SCRIPT of RELATIVE ABSENTEEISM RATE -->
+                <script type="text/javascript">
+                    $(document).ready(
+                        function () {
+                            console.log("Inside RELATIVE ABSENTEEISM RATE");
+                            function getISTDate(date) {
+                                let istOffset = 5.5 * 60 * 60 * 1000;
                                 let istDate = new Date(date.getTime() + istOffset);
                                 return istDate;
                             }

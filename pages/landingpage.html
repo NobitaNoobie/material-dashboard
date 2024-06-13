@@ -21,6 +21,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <!-- CSS Files -->
     <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.1.0" rel="stylesheet" />
+    <link href="../assets/css/new.css" rel="stylesheet" />
     <!-- Nepcha Analytics (nepcha.com) -->
     <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
     <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
@@ -431,7 +432,8 @@
                             </div>
 
                             <div class="text-end pt-1">
-                                <p class="text-sm text-warning opacity-6 mb-0 text-capitalize font-weight-bold">Leave distribution
+                                <p class="text-sm text-warning opacity-6 mb-0 text-capitalize font-weight-bold">Leave
+                                    distribution
                                 </p>
                             </div>
                         </div>
@@ -458,7 +460,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 <!-- UNPLANNED LEAVES COUNT -->
                 <script type="text/javascript">
@@ -539,14 +540,15 @@
                                 <i class="material-icons opacity-10">percent</i>
                             </div>
                             <div class="text-end pt-1">
-                                <p class="text-sm text-info opacity-6 font-weight-bold mb-0 text-capitalize"><span>Absenteeism rate in <span
-                                            id="absenteeism-rate-month"></p>
+                                <p class="text-sm text-info opacity-6 font-weight-bold mb-0 text-capitalize">
+                                    <span>Absenteeism rate in <span id="absenteeism-rate-month"></p>
                                 <h4 id="absenteeism-rate" class="mb-0">...</h4>
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
                         <div class="card-footer p-3">
-                            <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+5% </span>than last month</p>
+                            <p class="mb-0"><span id="absenteeism-rate-relative-more"
+                                    class="text-sm font-weight-bolder">... </span> than last month</p>
                         </div>
                     </div>
                 </div>
@@ -609,23 +611,22 @@
 
                             let today = new Date(); //today's date
                             today = getISTDate(today);
-                            console.log(today.toISOString());
-                            console.log("LOLLLLLLL", today);
 
-                            let formattedDate = today.toISOString().split('T')[0];
-                            let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                            let month = months[today.getMonth()]
-                            console.log("MONTH for absenteeism rate: ", month);
-
-                            $.get('http://127.0.0.1:8000/abc/absenteeism_rate/', { date: formattedDate })
+                            let formattedDate = today.toISOString().split('T')[0]; console.log(formattedDate);
+                            // getMonth() results in 0-indexed,i.e., January = 0
+                            console.log("MONTH ", today.getMonth() + 1); //remember to add 1 to avoid errors
+                            console.log("YEAR: ", today.getFullYear());
+                            $.get(`http://127.0.0.1:8000/abc/absenteeism_rate_relative/${today.getMonth() + 1}/${today.getFullYear()}`)
                                 .done(
                                     function (response) {
                                         if (response.status === 1) {
-                                            let employeeCount = response.msg; //captures the msg field in the Response json
-                                            $('#absenteeism-rate').text(employeeCount + ' %');
-                                            $('#absenteeism-rate-month').text(month);
-                                        }
-                                        else {
+                                            //let diffval = -1;
+                                            let diffval = Math.round(response.diff); //captures the diff field in the Response json
+                                            let diffstr = diffval>=0? `+${diffval}`:`${diffval}`;
+                                            $('#absenteeism-rate-relative-more').text( diffstr + '%');
+                                            // Set text color based on diffval (assuming positive diff indicates higher rate)
+                                            $('#absenteeism-rate-relative-more').css("color", diffval > 0 ? "#4CAF50" : "#F44335");
+                                        } else {
                                             console.error("Error: ", response.error);
                                         }
                                     }

@@ -189,7 +189,7 @@
                         </div>
                         <hr class="dark horizontal my-0">
                         <div class="card-footer p-3">
-                            <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+55% </span>than last
+                            <p class="mb-0"><span id="leave-applications-relative" class="text-success text-sm font-weight-bolder">... </span> than last
                                 week</p>
                         </div>
                     </div>
@@ -220,6 +220,49 @@
                                             $('#leave-count').text(employeeCount);
                                         }
                                         else {
+                                            console.error("Error: ", response.error);
+                                        }
+                                    }
+                                )
+                                .fail(
+                                    function (error) {
+                                        console.error("Error fetching data: ", error);
+                                    }
+                                );
+                        }
+                    );
+                </script>
+
+                <!-- SCRIPT of RELATIVE LEAVE APPLICATIONS RATE -->
+                <script type="text/javascript">
+                    $(document).ready(
+                        function () {
+                            console.log("Inside RELATIVE ABSENTEEISM RATE");
+                            function getISTDate(date) {
+                                let istOffset = 5.5 * 60 * 60 * 1000;
+                                let istDate = new Date(date.getTime() + istOffset);
+                                return istDate;
+                            }
+
+                            let today = new Date(); //today's date
+                            today = getISTDate(today);
+
+                            let formattedDate = today.toISOString().split('T')[0]; console.log(formattedDate);
+                            // getMonth() results in 0-indexed,i.e., January = 0
+                            console.log("MONTH ", today.getMonth() + 1); //remember to add 1 to avoid errors
+                            console.log("YEAR: ", today.getFullYear());
+                            $.get(`http://127.0.0.1:8000/abc/leave_applications_on_today/`)
+                                .done(
+                                    function (response) {
+                                        if (response.status === 1) {
+                                            //let diffval = -1;
+                                            let diffval = Math.round(response.diff); //captures the diff field in the Response json
+                                            console.log("rel leave application: ", diffval);
+                                            let diffstr = diffval >= 0 ? `+${diffval}` : `${diffval}`;
+                                            $('#leave-applications-relative').text(diffstr + '%');
+                                            // Set text color based on diffval (assuming positive diff indicates higher rate)
+                                            $('#leave-applications-relative').css("color", diffval > 0 ? "#4CAF50" : "#F44335");
+                                        } else {
                                             console.error("Error: ", response.error);
                                         }
                                     }
@@ -541,7 +584,8 @@
                             </div>
                             <div class="text-end pt-1">
                                 <p class="text-sm text-info opacity-6 font-weight-bold mb-0 text-capitalize">
-                                    <span>Absenteeism rate in <span id="absenteeism-rate-month"></p>
+                                    <span>Absenteeism rate in <span id="absenteeism-rate-month">
+                                </p>
                                 <h4 id="absenteeism-rate" class="mb-0">...</h4>
                             </div>
                         </div>
@@ -622,8 +666,8 @@
                                         if (response.status === 1) {
                                             //let diffval = -1;
                                             let diffval = Math.round(response.diff); //captures the diff field in the Response json
-                                            let diffstr = diffval>=0? `+${diffval}`:`${diffval}`;
-                                            $('#absenteeism-rate-relative-more').text( diffstr + '%');
+                                            let diffstr = diffval >= 0 ? `+${diffval}` : `${diffval}`;
+                                            $('#absenteeism-rate-relative-more').text(diffstr + '%');
                                             // Set text color based on diffval (assuming positive diff indicates higher rate)
                                             $('#absenteeism-rate-relative-more').css("color", diffval > 0 ? "#4CAF50" : "#F44335");
                                         } else {

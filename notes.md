@@ -88,3 +88,8 @@ in the ajax .ajax action method we can specify the method of request to be sent.
 however, in get() we can send only get requests. 
 --------------------------------------------------------
 
+## Things to keep in mind. CAUTION
+1. date.toISOString():
+returns a date and time separated by T and Z in UTC format
+
+2. id of each HTML element must be unique. Keep this in mind when defining selectors (for ids) in ajax

@@ -47,8 +47,11 @@
                             <div class="text-end pt-1">
                                 <p class="text-sm opacity-8 text-secondary font-weight-bold mb-0 text-capitalize">Leave
                                     applications today</p>
-                                <h4 id="leave-count" class="mb-0" data-bs-toggle="modal" data-bs-target="#leave-modal">
-                                    ...</h4>
+                                <!-- <h4 id="leave-count" class="mb-0" data-bs-toggle="modal" data-bs-target="#leave-modal">
+                                    ...</h4> -->
+                                <h4 id="leave-count" class="mb-0">
+                                    ...
+                                </h4>
                             </div>
                         </div>
                         <hr class="dark horizontal my-0">
@@ -73,7 +76,7 @@
                                 <table id="leave-table" class="table table-responsive text-center">
                                     <thead>
                                         <tr>
-                                            <th class="text text-info opacity-8">Staff ID</th>
+                                            <th class="text text-info opacity-8">Emp Id</th>
                                             <th class="text text-info opacity-8">Name</th>
                                         </tr>
                                     </thead>
@@ -90,11 +93,6 @@
                 <script type="text/javascript">
                     $(document).ready(
                         function () {
-                            $("#leave-count").hover(function () {
-                                $('#leave-count').css('cursor', 'pointer');
-                            }, function () {
-                                $('#leave-count').css('cursor', 'default');
-                            });
                             // 'default' to revert
                             console.log("Inside NUM LEAVE APPLICATIONS")
                             function getISTDate(date) {
@@ -117,23 +115,39 @@
                                             let employeeCount = response.msg; //captures the msg field in the Response json
                                             let employeeList = response.list;
                                             $('#leave-count').text(employeeCount);
-                                            $('#leave-count').on('click', function () {
-                                                let tableBody = $('#leave-table tbody');
-                                                tableBody.empty(); // Clear existing data
-
-                                                employeeList.forEach(function (employee) {
-                                                    let row = $('<tr>');
-                                                    row.append($('<td>').text(employee.Staff_id));
-                                                    row.append($('<td>').text(employee.Name));
-                                                    tableBody.append(row);
+                                            if (employeeCount > 0) {
+                                                $("#leave-count").hover(function () {
+                                                    $('#leave-count').css('cursor', 'pointer');
+                                                }, function () {
+                                                    $('#leave-count').css('cursor', 'default');
                                                 });
 
-                                                $('#leave-modal').show();
-                                            });
+                                                $('#leave-count').on('click', function () {
+                                                    let tableBody = $('#leave-table tbody');
+                                                    tableBody.empty(); // Clear existing data
 
-                                            $('.modal-close').on('click', function () {
-                                                $('#leave-modal').hide();
-                                            });
+                                                    employeeList.forEach(function (employee) {
+                                                        let row = $('<tr>');
+                                                        row.append($('<td>').text(employee.Staff_id));
+                                                        row.append($('<td>').text(employee.Name));
+                                                        tableBody.append(row);
+                                                    });
+
+                                                    $('#leave-modal').modal('show');
+                                                });
+                                                $('.modal-close').on('click', function () {
+                                                    $('#leave-modal').hide();
+                                                });
+                                                // $('.modal-close').on('click', function () {
+                                                //     $('#today-leave-modal').hide();
+                                                // });
+                                            }
+                                            else {
+                                                console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                                                $("#leave-count").css('cursor', 'default');
+                                                $('#leave-count').off('click');
+                                            }
+
                                         }
                                         else {
                                             console.error("Error: ", response.error);
@@ -148,8 +162,6 @@
                         }
                     );
                 </script>
-
-
 
                 <!-- SCRIPT of RELATIVE LEAVE APPLICATIONS RATE -->
                 <script type="text/javascript">
@@ -179,7 +191,7 @@
                                             let diffstr = diffval >= 0 ? `+${diffval}` : `${diffval}`;
                                             $('#leave-applications-relative').text(diffstr);
                                             // Set text color based on diffval (assuming positive diff indicates higher rate)
-                                            $('#leave-applications-relative').css("color", diffval > 0 ? "#4CAF50" : "#F44335");
+                                            $('#leave-applications-relative').css("color", diffval >= 0 ? "#4CAF50" : "#F44335");
                                         } else {
                                             console.error("Error: ", response.error);
                                         }
@@ -193,7 +205,6 @@
                         }
                     );
                 </script>
-
 
                 <!-- STYLE OF ABSENTEES -->
                 <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
@@ -218,8 +229,7 @@
 
                                     <div class="text-end pt-1">
                                         <p class="text-sm mb-0 text-capitalize">Tomorrow</p>
-                                        <h4 id="employee-count-tomorrow" class="mb-0" data-bs-toggle="modal"
-                                            data-bs-target="#tom-leave-modal">...</h4>
+                                        <h4 id="employee-count-tomorrow" class="mb-0">...</h4>
                                     </div>
 
                                     <div class="card-footer p-2"></div>
@@ -231,8 +241,7 @@
 
                                     <div class="text-end pt-1">
                                         <p class="text-sm mb-0 text-capitalize">Today</p>
-                                        <h4 id="employee-count" class="mb-0" data-bs-toggle="modal"
-                                            data-bs-target="#today-leave-modal">...</h4>
+                                        <h4 id="employee-count" class="mb-0">...</h4>
                                     </div>
 
                                     <div class="card-footer p-2"></div>
@@ -244,8 +253,7 @@
 
                                     <div class="text-end pt-1">
                                         <p class="text-sm mb-0 text-capitalize"><span id="curr-month">...</p>
-                                        <h4 id="employee-count-future" class="mb-0" data-bs-toggle="modal"
-                                            data-bs-target="#month-leave-modal">...</h4>
+                                        <h4 id="employee-count-future" class="mb-0">...</h4>
                                     </div>
                                 </div>
                             </div>
@@ -269,7 +277,7 @@
                                 <table id="tom-leave-table" class="table table-responsive text-center">
                                     <thead>
                                         <tr>
-                                            <th class="text text-info opacity-8">Staff ID</th>
+                                            <th class="text text-info opacity-8">Emp Id</th>
                                             <th class="text text-info opacity-8">Name</th>
                                         </tr>
                                     </thead>
@@ -297,7 +305,7 @@
                                 <table id="today-leave-table" class="table table-responsive text-center">
                                     <thead>
                                         <tr>
-                                            <th class="text text-info opacity-8">Staff ID</th>
+                                            <th class="text text-info opacity-8">Emp Id</th>
                                             <th class="text text-info opacity-8">Name</th>
                                         </tr>
                                     </thead>
@@ -327,7 +335,7 @@
                                 <table id="month-leave-table" class="table table-responsive text-center">
                                     <thead>
                                         <tr>
-                                            <th class="text text-info opacity-8">Staff ID</th>
+                                            <th class="text text-info opacity-8">Emp Id</th>
                                             <th class="text text-info opacity-8">Name</th>
                                         </tr>
                                     </thead>
@@ -344,11 +352,6 @@
                 <script type="text/javascript">
                     $(document).ready(
                         function () {
-                            $("#employee-count").hover(function () {
-                                $('#employee-count').css('cursor', 'pointer');
-                            }, function () {
-                                $('#employee-count').css('cursor', 'default');
-                            });
                             console.log("Inside TODAY NUM ABSENTEES")
                             function getISTDate(date) {
                                 // Calculate the IST date (UTC+5:30)
@@ -368,22 +371,32 @@
                                             let employeeCount = response.msg; //captures the msg field in the Response json
                                             let employeeList = response.list;
                                             $('#employee-count').text(employeeCount);
-                                            $('#employee-count').on('click', function () {
-                                                let tableBody = $('#today-leave-table tbody');
-                                                tableBody.empty(); // Clear existing data
-
-                                                employeeList.forEach(function (employee) {
-                                                    let row = $('<tr>');
-                                                    row.append($('<td>').text(employee.Staff_id));
-                                                    row.append($('<td>').text(employee.Name));
-                                                    tableBody.append(row);
+                                            if (employeeCount > 0) {
+                                                $("#employee-count").hover(function () {
+                                                    $('#employee-count').css('cursor', 'pointer');
+                                                }, function () {
+                                                    $('#employee-count').css('cursor', 'default');
                                                 });
+                                                $('#employee-count').on('click', function () {
+                                                    let tableBody = $('#today-leave-table tbody');
+                                                    tableBody.empty(); // Clear existing data
 
-                                                $('#today-leave-modal').show();
-                                            });
-                                            $('.modal-close').on('click', function () {
-                                                $('#today-leave-modal').hide();
-                                            });
+                                                    employeeList.forEach(function (employee) {
+                                                        let row = $('<tr>');
+                                                        row.append($('<td>').text(employee.Staff_id));
+                                                        row.append($('<td>').text(employee.Name));
+                                                        tableBody.append(row);
+                                                    });
+                                                    $('#today-leave-modal').modal('show');
+                                                });
+                                                $('.modal-close').on('click', function () {
+                                                    $('#today-leave-modal').modal('hide');
+                                                });
+                                            }
+                                            else {
+                                                $("#employee-count").css('cursor', 'default');
+                                                $('#employee-count').off('click');
+                                            }
                                         }
                                         else {
                                             console.error("Error: ", response.error);
@@ -403,11 +416,6 @@
                 <script type="text/javascript">
                     $(document).ready(
                         function () {
-                            $("#employee-count-tomorrow").hover(function () {
-                                $('#employee-count-tomorrow').css('cursor', 'pointer');
-                            }, function () {
-                                $('#employee-count-tomorrow').css('cursor', 'default');
-                            });
                             console.log("Inside TOMORROW NUM ABSENTEES");
                             function getISTDate(date) {
                                 // Calculate the IST date (UTC+5:30)
@@ -427,25 +435,37 @@
                                 .done(
                                     function (response) {
                                         if (response.status === 1) {
+                                            //let employeeCount = 0;
                                             let employeeCount = response.msg; //captures the msg field in the Response json
                                             let employeeList = response.list;
                                             $('#employee-count-tomorrow').text(employeeCount);
-                                            $('#employee-count-tomorrow').on('click', function () {
-                                                let tableBody = $('#tom-leave-table tbody');
-                                                tableBody.empty(); // Clear existing data
-
-                                                employeeList.forEach(function (employee) {
-                                                    let row = $('<tr>');
-                                                    row.append($('<td>').text(employee.Staff_Id));
-                                                    row.append($('<td>').text(employee.Name));
-                                                    tableBody.append(row);
+                                            if (employeeCount > 0) {
+                                                $("#employee-count-tomorrow").hover(function () {
+                                                    $('#employee-count-tomorrow').css('cursor', 'pointer');
+                                                }, function () {
+                                                    $('#employee-count-tomorrow').css('cursor', 'default');
                                                 });
+                                                $('#employee-count-tomorrow').on('click', function () {
+                                                    let tableBody = $('#tom-leave-table tbody');
+                                                    tableBody.empty(); // Clear existing data
 
-                                                $('#tom-leave-modal').show();
-                                            });
-                                            $('.modal-close').on('click', function () {
-                                                $('#tom-leave-modal').hide();
-                                            });
+                                                    employeeList.forEach(function (employee) {
+                                                        let row = $('<tr>');
+                                                        row.append($('<td>').text(employee.Staff_Id));
+                                                        row.append($('<td>').text(employee.Name));
+                                                        tableBody.append(row);
+                                                    });
+
+                                                    $('#tom-leave-modal').modal('show');
+                                                });
+                                                $('.modal-close').on('click', function () {
+                                                    $('#tom-leave-modal').modal('hide');
+                                                });
+                                            }
+                                            else {
+                                                $("#employee-count-tomorrow").css('cursor', 'default');
+                                                $('#employee-count-tomorrow').off('click');
+                                            }
                                         }
                                         else {
                                             console.error("Error: ", response.error);
@@ -465,11 +485,6 @@
                 <script type="text/javascript">
                     $(document).ready(
                         function () {
-                            $("#employee-count-future").hover(function () {
-                                $('#employee-count-future').css('cursor', 'pointer');
-                            }, function () {
-                                $('#employee-count-future').css('cursor', 'default');
-                            });
                             function getISTDate(date) {
                                 // Calculate the IST date (UTC+5:30)
                                 //5.5hr * 60mins * 60secs * 1000 ms
@@ -499,22 +514,33 @@
                                             $('#curr-month').text(monthName);
                                             $('#curr-month-modal').text(monthName);
                                             let employeeList = response.list;
-                                            $('#employee-count-future').on('click', function () {
-                                                let tableBody = $('#month-leave-table tbody');
-                                                tableBody.empty(); // Clear existing data
-
-                                                employeeList.forEach(function (employee) {
-                                                    let row = $('<tr>');
-                                                    row.append($('<td>').text(employee.Staff_Id));
-                                                    row.append($('<td>').text(employee.Name));
-                                                    tableBody.append(row);
+                                            if (employeeCount > 0) {
+                                                $("#employee-count-future").hover(function () {
+                                                    $('#employee-count-future').css('cursor', 'pointer');
+                                                }, function () {
+                                                    $('#employee-count-future').css('cursor', 'default');
                                                 });
+                                                $('#employee-count-future').on('click', function () {
+                                                    let tableBody = $('#month-leave-table tbody');
+                                                    tableBody.empty(); // Clear existing data
 
-                                                $('#month-leave-modal').show();
-                                            });
-                                            $('.modal-close').on('click', function () {
-                                                $('#month-leave-modal').hide();
-                                            });
+                                                    employeeList.forEach(function (employee) {
+                                                        let row = $('<tr>');
+                                                        row.append($('<td>').text(employee.Staff_Id));
+                                                        row.append($('<td>').text(employee.Name));
+                                                        tableBody.append(row);
+                                                    });
+
+                                                    $('#month-leave-modal').modal('show');
+                                                });
+                                                $('.modal-close').on('click', function () {
+                                                    $('#month-leave-modal').modal('hide');
+                                                });
+                                            }
+                                            else {
+                                                $("#employee-count-future").css('cursor', 'default');
+                                                $('#employee-count-future').off('click');
+                                            }
                                         }
                                         else {
                                             console.error("Error: ", response.error);
@@ -687,11 +713,11 @@
                             let month = months[today.getMonth()]
                             console.log("MONTH for absenteeism rate: ", month);
 
-                            $.get('http://127.0.0.1:8000/abc/absenteeism_rate/', { date: formattedDate })
+                            $.get(`http://127.0.0.1:8000/abc/absenteeism_rate_relative/${today.getMonth() + 1}/${today.getFullYear()}`, { date: formattedDate })
                                 .done(
                                     function (response) {
                                         if (response.status === 1) {
-                                            let employeeCount = response.msg; //captures the msg field in the Response json
+                                            let employeeCount = response.curr; //captures the msg field in the Response json
                                             $('#absenteeism-rate').text(employeeCount + ' %');
                                             $('#absenteeism-rate-month').text(month);
                                         }
@@ -753,6 +779,51 @@
 
             </div>
             <!-- add THE SECTION BELOW THE CARDS from testing.html here -->
+
+            <div class="row mt-4">
+                <div class="col-lg-6 col-md-6 mt-4 mb-4">
+                    <div class="card z-index-2 ">
+                        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                            <div class="bg-gradient-primary opacity-9 shadow-primary border-radius-lg py-3 pe-1">
+                                <div class="chart">
+                                    <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="mb-0 text-capitalize">weekly Leave Distribution</h6>
+                            <p class="text-sm ">Last Campaign Performance</p>
+                            <hr class="dark horizontal">
+                            <div class="d-flex ">
+                                <i class="material-icons text-sm my-auto me-1">schedule</i>
+                                <p class="mb-0 text-sm"> campaign sent 2 days ago </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6 mt-4 mb-4">
+                    <div class="card z-index-2  ">
+                        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+                            <div class="bg-gradient-success opacity-9 shadow-success border-radius-lg py-3 pe-1">
+                                <div class="chart">
+                                    <canvas id="chart-line" class="chart-canvas" height="170"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="mb-0 text-capitalize"> monthly absenteeism rate </h6>
+                            <p class="text-sm "> (<span class="font-weight-bolder">+15%</span>) increase in today sales.
+                            </p>
+                            <hr class="dark horizontal">
+                            <div class="d-flex ">
+                                <i class="material-icons text-sm my-auto me-1">schedule</i>
+                                <p class="mb-0 text-sm"> updated 4 min ago </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     <div class="fixed-plugin">
@@ -854,169 +925,118 @@
     <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
     <script src="../assets/js/plugins/chartjs.min.js"></script>
     <script>
-        var ctx = document.getElementById("chart-bars").getContext("2d");
-
-        new Chart(ctx, {
-            type: "bar",
-            data: {
-                labels: ["M", "T", "W", "T", "F", "S", "S"],
-                datasets: [{
-                    label: "Sales",
-                    tension: 0.4,
-                    borderWidth: 0,
-                    borderRadius: 4,
-                    borderSkipped: false,
-                    backgroundColor: "rgba(255, 255, 255, .8)",
-                    data: [50, 20, 10, 22, 50, 10, 40],
-                    maxBarThickness: 6
-                },],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
-                scales: {
-                    y: {
-                        grid: {
-                            drawBorder: false,
-                            display: true,
-                            drawOnChartArea: true,
-                            drawTicks: false,
-                            borderDash: [5, 5],
-                            color: 'rgba(255, 255, 255, .2)'
-                        },
-                        ticks: {
-                            suggestedMin: 0,
-                            suggestedMax: 500,
-                            beginAtZero: true,
-                            padding: 10,
-                            font: {
-                                size: 14,
-                                weight: 300,
-                                family: "Roboto",
-                                style: 'normal',
-                                lineHeight: 2
-                            },
-                            color: "#fff"
-                        },
-                    },
-                    x: {
-                        grid: {
-                            drawBorder: false,
-                            display: true,
-                            drawOnChartArea: true,
-                            drawTicks: false,
-                            borderDash: [5, 5],
-                            color: 'rgba(255, 255, 255, .2)'
-                        },
-                        ticks: {
-                            display: true,
-                            color: '#f8f9fa',
-                            padding: 10,
-                            font: {
-                                size: 14,
-                                weight: 300,
-                                family: "Roboto",
-                                style: 'normal',
-                                lineHeight: 2
-                            },
-                        }
-                    },
-                },
-            },
-        });
-
-
         var ctx2 = document.getElementById("chart-line").getContext("2d");
+        $(document).ready(
+            function () {
+                console.log("Inside ABSEBTEEISM RATE LIST");
+                let today = new Date(); //today's date
+                let formattedDate = today.toISOString().split('T')[0]; console.log(formattedDate);
+                // getMonth() results in 0-indexed,i.e., January = 0
+                console.log("YEAR: ", today.getFullYear());
+                $.get(`http://127.0.0.1:8000/abc/absenteeism_rate_list/${today.getFullYear()}`)
+                    .done(
+                        function (response) {
+                            if (response.status === 1) {
+                                const rate_list = response.msg;
+                                console.log(rate_list)
+                                var rate_arr = [];
+                                for (let ele of rate_list) {
+                                    rate_arr.push(ele.rate);
+                                }
+                                console.log(rate_arr)
+                                var ctx2 = document.getElementById("chart-line").getContext("2d");
+                                new Chart(ctx2, {
+                                    type: "line",
+                                    data: {
+                                        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                                        datasets: [{
+                                            //label: "Mobile apps",
+                                            tension: 0,
+                                            borderWidth: 0,
+                                            pointRadius: 5,
+                                            pointBackgroundColor: "rgba(255, 255, 255, .8)",
+                                            pointBorderColor: "transparent",
+                                            borderColor: "rgba(255, 255, 255, .8)",
+                                            borderWidth: 4,
+                                            backgroundColor: "transparent",
+                                            fill: true,
+                                            data: rate_arr,
+                                            maxBarThickness: 6
 
-        new Chart(ctx2, {
-            type: "line",
-            data: {
-                labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-                datasets: [{
-                    label: "Mobile apps",
-                    tension: 0,
-                    borderWidth: 0,
-                    pointRadius: 5,
-                    pointBackgroundColor: "rgba(255, 255, 255, .8)",
-                    pointBorderColor: "transparent",
-                    borderColor: "rgba(255, 255, 255, .8)",
-                    borderColor: "rgba(255, 255, 255, .8)",
-                    borderWidth: 4,
-                    backgroundColor: "transparent",
-                    fill: true,
-                    data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
-                    maxBarThickness: 6
+                                        }],
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: false,
+                                            }
+                                        },
+                                        interaction: {
+                                            intersect: false,
+                                            mode: 'index',
+                                        },
+                                        scales: {
+                                            y: {
+                                                grid: {
+                                                    drawBorder: false,
+                                                    display: true,
+                                                    drawOnChartArea: true,
+                                                    drawTicks: false,
+                                                    borderDash: [5, 5],
+                                                    color: 'rgba(255, 255, 255, .2)'
+                                                },
+                                                ticks: {
+                                                    display: true,
+                                                    color: '#f8f9fa',
+                                                    padding: 10,
+                                                    font: {
+                                                        size: 14,
+                                                        weight: 300,
+                                                        family: "Roboto",
+                                                        style: 'normal',
+                                                        lineHeight: 2
+                                                    },
+                                                }
+                                            },
+                                            x: {
+                                                grid: {
+                                                    drawBorder: false,
+                                                    display: false,
+                                                    drawOnChartArea: false,
+                                                    drawTicks: false,
+                                                    borderDash: [5, 5]
+                                                },
+                                                ticks: {
+                                                    display: true,
+                                                    color: '#f8f9fa',
+                                                    padding: 10,
+                                                    font: {
+                                                        size: 14,
+                                                        weight: 300,
+                                                        family: "Roboto",
+                                                        style: 'normal',
+                                                        lineHeight: 2
+                                                    },
+                                                }
+                                            },
+                                        },
+                                    },
+                                });
 
-                }],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
-                scales: {
-                    y: {
-                        grid: {
-                            drawBorder: false,
-                            display: true,
-                            drawOnChartArea: true,
-                            drawTicks: false,
-                            borderDash: [5, 5],
-                            color: 'rgba(255, 255, 255, .2)'
-                        },
-                        ticks: {
-                            display: true,
-                            color: '#f8f9fa',
-                            padding: 10,
-                            font: {
-                                size: 14,
-                                weight: 300,
-                                family: "Roboto",
-                                style: 'normal',
-                                lineHeight: 2
-                            },
+                            } else {
+                                console.error("Error: ", response.error);
+                            }
                         }
-                    },
-                    x: {
-                        grid: {
-                            drawBorder: false,
-                            display: false,
-                            drawOnChartArea: false,
-                            drawTicks: false,
-                            borderDash: [5, 5]
-                        },
-                        ticks: {
-                            display: true,
-                            color: '#f8f9fa',
-                            padding: 10,
-                            font: {
-                                size: 14,
-                                weight: 300,
-                                family: "Roboto",
-                                style: 'normal',
-                                lineHeight: 2
-                            },
+                    )
+                    .fail(
+                        function (error) {
+                            console.error("Error fetching data: ", error);
                         }
-                    },
-                },
-            },
-        });
+                    );
+            }
+        );
 
         var ctx3 = document.getElementById("chart-line-tasks").getContext("2d");
 
